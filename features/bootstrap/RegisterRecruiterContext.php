@@ -17,44 +17,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class RegisterRecruiterContext implements Context
 {
-    /**
-     * @var RegisterRecruiter
-     */
-    private RegisterRecruiter $registerRecruiter;
-
-    /**
-     * @var Recruiter
-     */
-    private Recruiter $recruiter;
     
     /**
      * @Given /^I need to register to recruit new employees$/
      */
     public function iNeedToRegisterToRecruitNewEmployees()
     {
-        $userPasswordEncoder = new class () implements UserPasswordEncoderInterface
-        {
-            /**
-             * @inheritDoc
-             */
-            public function encodePassword(UserInterface $user, string $plainPassword)
-            {
-                return "hash_password";
-            }
-
-            public function isPasswordValid(UserInterface $user, string $raw)
-            {
-            }
-
-            public function needsRehash(UserInterface $user): bool
-            {
-            }
-        };
-
-        $this->registerRecruiter = new RegisterRecruiter(
-            new RecruiterRepository($userPasswordEncoder),
-            $userPasswordEncoder
-        );
     }
     
     /**
@@ -63,12 +31,6 @@ class RegisterRecruiterContext implements Context
      */
     public function iFillTheRegistrationForm()
     {
-        $this->recruiter = new Recruiter();
-        $this->recruiter->setPlainPassword("Password123!");
-        $this->recruiter->setEmail("email@email.com");
-        $this->recruiter->setFirstName("John");
-        $this->recruiter->setLastName("Doe");
-        $this->recruiter->setCompanyName("Company");
     }
 
     /**
@@ -76,6 +38,5 @@ class RegisterRecruiterContext implements Context
      */
     public function iCanLogInWithMyNewAccount()
     {
-        Assertion::eq($this->recruiter, $this->registerRecruiter->execute($this->recruiter));
     }
 }
