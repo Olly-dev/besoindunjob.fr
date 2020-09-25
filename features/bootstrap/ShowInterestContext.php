@@ -34,6 +34,5 @@ class ShowInterestContext implements Context
      */
     public function theJobSeekerIsAwareOfOurInterest()
     {
-        
-     }
+    }
 }
