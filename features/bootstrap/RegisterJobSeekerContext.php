@@ -18,10 +18,21 @@ class RegisterJobSeekerContext implements Context
 {
 
     /**
+     * @var RegisterJobSeeker $registerJobSeeker
+     */
+    private RegisterJobSeeker $registerJobSeeker;
+
+    /**
+     * @var JobSeeker $jobSeeker
+     */
+    private JobSeeker $jobSeeker;
+    
+    /**
      * @Given /^I need to register to look for a new job$/
      */
     public function iNeedToRegisterToLookForANewJob()
     {
+        $this->registerJobSeeker = new RegisterJobSeeker(new JobSeekerRepository());
     }
 
     /**
@@ -30,6 +41,11 @@ class RegisterJobSeekerContext implements Context
      */
     public function iFillTheRegistrationForm()
     {
+        $this->jobSeeker = new JobSeeker();
+        $this->jobSeeker->setPlainPasword("password123");
+        $this->jobSeeker->setEmail("email@email.fr");
+        $this->jobSeeker->setFirstName("Jhon");
+        $this->jobSeeker->setLastName("Doe");
     }
 
     /**
@@ -37,5 +53,6 @@ class RegisterJobSeekerContext implements Context
      */
     public function iCanLogInWithMyNewAccount()
     {
+        Assertion::eq($this->jobSeeker, $this->registerJobSeeker->execute($this->jobSeeker));
     }
 }

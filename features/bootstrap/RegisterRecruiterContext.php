@@ -17,12 +17,22 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class RegisterRecruiterContext implements Context
 {
+    /**
+     * @var RegisterRecruiter $registerRecruiter
+     */
+    private RegisterRecruiter $registerRecruiter;
+
+    /**
+     * @var Recruiter $recruiter
+     */
+    private Recruiter $recruiter;
     
     /**
      * @Given /^I need to register to recruit new employees$/
      */
     public function iNeedToRegisterToRecruitNewEmployees()
     {
+        $this->registerRecruiter = new RegisterRecruiter(new RecruiterRepository());
     }
     
     /**
@@ -31,6 +41,12 @@ class RegisterRecruiterContext implements Context
      */
     public function iFillTheRegistrationForm()
     {
+        $this->recruiter = new Recruiter();
+        $this->recruiter->setPlainPasword("password123");
+        $this->recruiter->setEmail("email@email.fr");
+        $this->recruiter->setFirstName("Jhon");
+        $this->recruiter->setLastName("Doe");
+        $this->recruiter->setCompanyName("company");
     }
 
     /**
@@ -38,5 +54,6 @@ class RegisterRecruiterContext implements Context
      */
     public function iCanLogInWithMyNewAccount()
     {
+        Assertion::eq($this->recruiter, $this->registerRecruiter->execute($this->recruiter));
     }
 }
