@@ -2,12 +2,17 @@
 
 namespace App\Tests\Unit;
 
-use App\Adapter\InMemory\Repository\JobSeekerRepository;
 use App\Entity\JobSeeker;
+use PHPUnit\Framework\TestCase;
 use App\UseCase\RegisterJobSeeker;
 use Assert\LazyAssertionException;
-use PHPUnit\Framework\TestCase;
+use App\Adapter\InMemory\Repository\JobSeekerRepository;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * RegisterJobSeekerTest class
+ * @package App\Tests\Unit
+ */
 class RegisterJobSeekerTest extends TestCase
 {
     /**
@@ -15,10 +20,13 @@ class RegisterJobSeekerTest extends TestCase
      */
     public function testSuccessfullRegistration()
     {
-        $useCase = new RegisterJobSeeker(new JobSeekerRepository());
+        $userPasswordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
+        $userPasswordEncoder->method("encodePassword")->willReturn("hash_password");
+
+        $useCase = new RegisterJobSeeker(new JobSeekerRepository($userPasswordEncoder), $userPasswordEncoder);
 
         $jobSeeker = new JobSeeker();
-        $jobSeeker->setPlainPasword("password123!");
+        $jobSeeker->setPlainPassword("password123!");
         $jobSeeker->setEmail("email@email.fr");
         $jobSeeker->setFirstName("Jhon");
         $jobSeeker->setLastName("Doe");
@@ -32,7 +40,10 @@ class RegisterJobSeekerTest extends TestCase
      */
     public function testBadJobSeeker(JobSeeker $jobSeeker)
     {
-        $useCase = new RegisterJobSeeker(new JobSeekerRepository());
+        $userPasswordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
+        $userPasswordEncoder->method("encodePassword")->willReturn("hash_password");
+
+        $useCase = new RegisterJobSeeker(new JobSeekerRepository($userPasswordEncoder), $userPasswordEncoder);
 
         $this->expectException(LazyAssertionException::class);
 
@@ -50,7 +61,7 @@ class RegisterJobSeekerTest extends TestCase
             (new JobSeeker())
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -58,14 +69,14 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName('')
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
             (new JobSeeker())
                 ->setFirstName("jhon")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -73,14 +84,14 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName('jhon')
                 ->setLastName("")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
             (new JobSeeker())
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -88,7 +99,7 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -96,7 +107,7 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("fail")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -111,7 +122,7 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("fail")
+                ->setPlainPassword("fail")
         ];
 
         yield[
@@ -119,7 +130,7 @@ class RegisterJobSeekerTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("")
+                ->setPlainPassword("")
         ];
     }
 }

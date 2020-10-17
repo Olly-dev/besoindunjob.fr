@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Repository;
+namespace App\Adapter\Doctrine\Repository;
 
 use App\Entity\Recruiter;
 use App\Gateway\RecruiterGateway;
-
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Adapter\Doctrine\Repository\UserRepository;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @method Recruiter|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,16 +14,31 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Recruiter[]    findAll()
  * @method Recruiter[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RecruiterRepository extends ServiceEntityRepository implements RecruiterGateway
+class RecruiterRepository extends UserRepository implements RecruiterGateway
 {
-    public function __construct(ManagerRegistry $registry)
+
+    
+    public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $userPasswordEncoder)
     {
         parent::__construct($registry, Recruiter::class);
+
+        $recruiter = (new Recruiter())
+        ->setFirstName("jhon")
+        ->setLastName("Doe")
+        ->setCompanyName("company")
+        ->setEmail("recruiter@email.com");
+
+        $recruiter->setPassword($userPasswordEncoder->encodePassword($recruiter, "Password123!"));
+
+        $this->users[] = [
+            "recruiter@email.com" => $recruiter
+        ];
     }
 
-    public Function register(Recruiter $recruiter): void
+    public function register(Recruiter $recruiter): void
     {
-        //TODO: Implement register() method
+        $this->_em->persist($recruiter);
+        $this->_em->flush();
     }
 
     // /**

@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class User
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"job_seeker" = "App\Entity\JobSeeker", "recruiter" = "App\Entity\Recruiter"})
  */
-abstract class User
+abstract class User implements UserInterface
 {
     /**
      * @var int|null
@@ -50,7 +50,7 @@ abstract class User
     /**
      * @var string|null
      */
-    protected ?string $plainPasword = null;
+    protected ?string $plainPassword = null;
 
     /**
      * @var \DateTimeInterface
@@ -70,7 +70,7 @@ abstract class User
      * Get the value of id
      *
      * @return  int|null
-     */ 
+     */
     public function getId(): ?int
     {
         return $this->id;
@@ -82,7 +82,7 @@ abstract class User
      * @param  int|null  $id
      *
      * @return  self
-     */ 
+     */
     public function setId(?int $id): self
     {
         $this->id = $id;
@@ -94,7 +94,7 @@ abstract class User
      * Get the value of firstName
      *
      * @return  string|null
-     */ 
+     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -106,7 +106,7 @@ abstract class User
      * @param  string|null  $firstName
      *
      * @return  self
-     */ 
+     */
     public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
@@ -118,7 +118,7 @@ abstract class User
      * Get the value of lastName
      *
      * @return  string|null
-     */ 
+     */
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -130,7 +130,7 @@ abstract class User
      * @param  string|null  $lastName
      *
      * @return  self
-     */ 
+     */
     public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
@@ -142,7 +142,7 @@ abstract class User
      * Get the value of email
      *
      * @return  string|null
-     */ 
+     */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -154,7 +154,7 @@ abstract class User
      * @param  string|null  $email
      *
      * @return  self
-     */ 
+     */
     public function setEmail(?string $email): self
     {
         $this->email = $email;
@@ -166,7 +166,7 @@ abstract class User
      * Get the value of password
      *
      * @return  string|null
-     */ 
+     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -178,7 +178,7 @@ abstract class User
      * @param  string|null  $password
      *
      * @return  self
-     */ 
+     */
     public function setPassword(?string $password): self
     {
         $this->password = $password;
@@ -187,25 +187,25 @@ abstract class User
     }
 
     /**
-     * Get the value of plainPasword
+     * Get the value of plainPassword
      *
      * @return  string|null
-     */ 
-    public function getPlainPasword(): ?string
+     */
+    public function getPlainPassword(): ?string
     {
-        return $this->plainPasword;
+        return $this->plainPassword;
     }
 
     /**
-     * Set the value of plainPasword
+     * Set the value of plainPassword
      *
-     * @param  string|null  $plainPasword
+     * @param  string|null  $plainPassword
      *
      * @return  self
-     */ 
-    public function setPlainPasword(?string $plainPasword): self
+     */
+    public function setPlainPassword(?string $plainPassword): self
     {
-        $this->plainPasword = $plainPasword;
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
@@ -214,9 +214,35 @@ abstract class User
      * Get the value of registredAt
      *
      * @return  \DateTimeInterface
-     */ 
+     */
     public function getRegistredAt(): \DateTimeInterface
     {
         return $this->registredAt;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @return void
+     */
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @return string|null The salt
+     */
+    public function getSalt()
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function eraseCredentials()
+    {
     }
 }

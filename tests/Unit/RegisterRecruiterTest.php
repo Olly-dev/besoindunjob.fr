@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use App\UseCase\RegisterRecruiter;
 use Assert\LazyAssertionException;
 use App\Adapter\InMemory\Repository\RecruiterRepository;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegisterRecruiterTest extends TestCase
 {
@@ -15,10 +16,13 @@ class RegisterRecruiterTest extends TestCase
      */
     public function testSuccessfullRegistration()
     {
-        $useCase = new RegisterRecruiter(new RecruiterRepository());
+        $userPasswordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
+        $userPasswordEncoder->method("encodePassword")->willReturn("hash_password");
+
+        $useCase = new RegisterRecruiter(new RecruiterRepository($userPasswordEncoder), $userPasswordEncoder);
 
         $recruiter = new Recruiter();
-        $recruiter->setPlainPasword("password123!");
+        $recruiter->setPlainPassword("password123!");
         $recruiter->setEmail("email@email.fr");
         $recruiter->setFirstName("Jhon");
         $recruiter->setLastName("Doe");
@@ -33,7 +37,10 @@ class RegisterRecruiterTest extends TestCase
      */
     public function testBadRecruiter(Recruiter $recruiter)
     {
-        $useCase = new RegisterRecruiter(new RecruiterRepository());
+        $userPasswordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
+        $userPasswordEncoder->method("encodePassword")->willReturn("hash_password");
+
+        $useCase = new RegisterRecruiter(new RecruiterRepository($userPasswordEncoder), $userPasswordEncoder);
 
         $this->expectException(LazyAssertionException::class);
 
@@ -52,7 +59,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
         ];
 
         yield[
@@ -60,7 +67,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("")
         ];
 
@@ -68,7 +75,7 @@ class RegisterRecruiterTest extends TestCase
             (new Recruiter())
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -77,7 +84,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName('')
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -85,7 +92,7 @@ class RegisterRecruiterTest extends TestCase
             (new Recruiter())
                 ->setFirstName("jhon")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -94,7 +101,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName('jhon')
                 ->setLastName("")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -102,7 +109,7 @@ class RegisterRecruiterTest extends TestCase
             (new Recruiter())
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -111,7 +118,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -120,7 +127,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("fail")
-                ->setPlainPasword("password123!")
+                ->setPlainPassword("password123!")
                 ->setCompanyName("company")
         ];
 
@@ -137,7 +144,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("fail")
+                ->setPlainPassword("fail")
                 ->setCompanyName("company")
         ];
 
@@ -146,7 +153,7 @@ class RegisterRecruiterTest extends TestCase
                 ->setFirstName("Jhon")
                 ->setLastName("Doe")
                 ->setEmail("email@email.fr")
-                ->setPlainPasword("")
+                ->setPlainPassword("")
                 ->setCompanyName("company")
         ];
     }

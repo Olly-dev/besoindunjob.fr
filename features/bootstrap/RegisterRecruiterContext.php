@@ -32,7 +32,24 @@ class RegisterRecruiterContext implements Context
      */
     public function iNeedToRegisterToRecruitNewEmployees()
     {
-        $this->registerRecruiter = new RegisterRecruiter(new RecruiterRepository());
+
+        $userPasswordEncoder = new Class () implements UserPasswordEncoderInterface
+        {
+            public function encodePassword(UserInterface $user, string $plainPassword)
+            {
+                return "hash_password";
+            }
+
+            public function isPasswordValid(UserInterface $user, string $raw)
+            {
+            }
+
+            public function needsRehash(UserInterface $user): bool
+            {
+            }
+        };
+
+        $this->registerRecruiter = new RegisterRecruiter(new RecruiterRepository($userPasswordEncoder));
     }
     
     /**
@@ -42,7 +59,7 @@ class RegisterRecruiterContext implements Context
     public function iFillTheRegistrationForm()
     {
         $this->recruiter = new Recruiter();
-        $this->recruiter->setPlainPasword("password123");
+        $this->recruiter->setPlainPassword("password123");
         $this->recruiter->setEmail("email@email.fr");
         $this->recruiter->setFirstName("Jhon");
         $this->recruiter->setLastName("Doe");

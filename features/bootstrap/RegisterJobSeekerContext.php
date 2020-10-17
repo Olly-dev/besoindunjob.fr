@@ -7,6 +7,7 @@ use App\Entity\JobSeeker;
 use App\UseCase\RegisterJobSeeker;
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
+use PhpParser\Builder\Class_;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -26,13 +27,30 @@ class RegisterJobSeekerContext implements Context
      * @var JobSeeker $jobSeeker
      */
     private JobSeeker $jobSeeker;
-    
+
     /**
      * @Given /^I need to register to look for a new job$/
      */
     public function iNeedToRegisterToLookForANewJob()
     {
-        $this->registerJobSeeker = new RegisterJobSeeker(new JobSeekerRepository());
+
+        $userPasswordEncoder = new Class () implements UserPasswordEncoderInterface
+        {
+            public function encodePassword(UserInterface $user, string $plainPassword)
+            {
+                return "hash_password";
+            }
+
+            public function isPasswordValid(UserInterface $user, string $raw)
+            {
+            }
+
+            public function needsRehash(UserInterface $user): bool
+            {
+            }
+        };
+
+        $this->registerJobSeeker = new RegisterJobSeeker(new JobSeekerRepository($userPasswordEncoder));
     }
 
     /**
@@ -42,7 +60,7 @@ class RegisterJobSeekerContext implements Context
     public function iFillTheRegistrationForm()
     {
         $this->jobSeeker = new JobSeeker();
-        $this->jobSeeker->setPlainPasword("password123");
+        $this->jobSeeker->setPlainPassword("password123");
         $this->jobSeeker->setEmail("email@email.fr");
         $this->jobSeeker->setFirstName("Jhon");
         $this->jobSeeker->setLastName("Doe");

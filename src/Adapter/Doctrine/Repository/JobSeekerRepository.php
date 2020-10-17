@@ -2,11 +2,11 @@
 
 namespace App\Adapter\Doctrine\Repository;
 
+use App\Adapter\Doctrine\Repository\UserRepository;
 use App\Entity\JobSeeker;
 use App\Gateway\JobSeekerGateway;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Laminas\Code\Reflection\FunctionReflection;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @method JobSeeker|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,16 +14,30 @@ use Laminas\Code\Reflection\FunctionReflection;
  * @method JobSeeker[]    findAll()
  * @method JobSeeker[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class JobSeekerRepository extends ServiceEntityRepository implements JobSeekerGateway
+class JobSeekerRepository extends UserRepository implements JobSeekerGateway
 {
-    public function __construct(ManagerRegistry $registry)
+   
+
+    public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $userPasswordEncoder)
     {
         parent::__construct($registry, JobSeeker::class);
+
+        $jobSeeker = (new JobSeeker())
+        ->setFirstName("jhon")
+        ->setLastName("Doe")
+        ->setEmail("job.seeker@email.com");
+
+        $jobSeeker->setPassword($userPasswordEncoder->encodePassword($jobSeeker, "Password123!"));
+
+        $this->users[] = [
+            "job.seeker@email.com" => $jobSeeker
+        ];
     }
 
-    public Function register(JobSeeker $jobSeeker): void
+    public function register(JobSeeker $jobSeeker): void
     {
-        //TODO: Implement register() method
+        $this->_em->persist($jobSeeker);
+        $this->_em->flush();
     }
 
     // /**
