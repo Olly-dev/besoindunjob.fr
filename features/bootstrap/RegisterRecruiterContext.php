@@ -50,7 +50,7 @@ class RegisterRecruiterContext implements Context
         };
 
         $this->registerRecruiter = new RegisterRecruiter(
-            new RecruiterRepository($userPasswordEncoder), 
+            new RecruiterRepository($userPasswordEncoder),
             $userPasswordEncoder
         );
     }
